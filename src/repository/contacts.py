@@ -1,3 +1,6 @@
+from typing import List, Optional
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import Contact
@@ -14,3 +17,23 @@ class ContactsRepository:
         await self.db.commit()
         await self.db.refresh(contact)
         return contact
+
+    async def read_contacts(
+        self,
+        firstname: Optional[str] = None,
+        lastname: Optional[str] = None,
+        email: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 10,
+    ) -> List[Contact]:
+        stmt = select(Contact).offset(skip).limit(limit)
+
+        if firstname:
+            stmt = stmt.where(Contact.firstname.match(firstname))
+        if lastname:
+            stmt = stmt.where(Contact.lastname.match(lastname))
+        if email:
+            stmt = stmt.where(Contact.email.match(email))
+
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
