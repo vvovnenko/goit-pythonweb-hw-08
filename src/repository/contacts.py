@@ -37,3 +37,8 @@ class ContactsRepository:
 
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
+
+    async def read_contact(self, contact_id: int) -> Optional[Contact]:
+        stmt = select(Contact).filter_by(id=contact_id)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()

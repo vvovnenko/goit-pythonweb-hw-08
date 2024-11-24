@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
@@ -35,3 +35,16 @@ async def read_contacts(
         firstname, lastname, email, skip, limit
     )
     return contacts
+
+
+@router.get(
+    "/{contact_id}", response_model=ContactResponseModel, summary="Read contact"
+)
+async def read_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
+    contact_service = ContactService(db)
+    contact = await contact_service.read_contact(contact_id)
+    if contact is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found."
+        )
+    return contact

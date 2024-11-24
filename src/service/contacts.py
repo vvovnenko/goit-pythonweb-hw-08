@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +21,10 @@ class ContactService:
         email: Optional[str] = None,
         skip: int = 0,
         limit: int = 10,
-    ):
+    ) -> List[Contact]:
         return await self.contact_repo.read_contacts(
             firstname, lastname, email, skip, limit
         )
+
+    async def read_contact(self, contact_id: int) -> Optional[Contact]:
+        return await self.contact_repo.read_contact(contact_id)
