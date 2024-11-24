@@ -48,3 +48,18 @@ async def read_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found."
         )
     return contact
+
+
+@router.put(
+    "/{contact_id}", response_model=ContactResponseModel, summary="Update contact"
+)
+async def update_contact(
+    body: ContactModel, contact_id: int, db: AsyncSession = Depends(get_db)
+):
+    contact_service = ContactService(db)
+    contact = await contact_service.update_contact(contact_id, body)
+    if contact is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found."
+        )
+    return contact

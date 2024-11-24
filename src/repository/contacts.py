@@ -42,3 +42,14 @@ class ContactsRepository:
         stmt = select(Contact).filter_by(id=contact_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def update_contact(
+        self, contact_id: int, body: ContactModel
+    ) -> Optional[Contact]:
+        contact = await self.read_contact(contact_id)
+        if contact:
+            for key, value in body.model_dump(exclude_unset=True).items():
+                setattr(contact, key, value)
+            await self.db.commit()
+            await self.db.refresh(contact)
+        return contact
