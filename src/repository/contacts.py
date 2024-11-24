@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import date, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,6 +24,7 @@ class ContactsRepository:
         firstname: Optional[str] = None,
         lastname: Optional[str] = None,
         email: Optional[str] = None,
+        upcoming_birthday_days: Optional[int] = None,
         skip: int = 0,
         limit: int = 10,
     ) -> List[Contact]:
@@ -34,6 +36,13 @@ class ContactsRepository:
             stmt = stmt.where(Contact.lastname.match(lastname))
         if email:
             stmt = stmt.where(Contact.email.match(email))
+
+        if upcoming_birthday_days:
+            stmt = stmt.where(
+                Contact.birthday.between(
+                    date.today(), date.today() + timedelta(days=upcoming_birthday_days)
+                )
+            )
 
         result = await self.db.execute(stmt)
         return list(result.scalars().all())

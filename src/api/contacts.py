@@ -24,15 +24,20 @@ async def create_contact(body: ContactModel, db: AsyncSession = Depends(get_db))
 @router.get("/", response_model=List[ContactResponseModel], summary="Read contacts")
 async def read_contacts(
     firstname: Optional[str] = Query(default=None, max_length=50, min_length=2),
-    lastname: str | None = Query(default=None, max_length=50, min_length=2),
-    email: str | None = Query(default=None, max_length=150, min_length=5),
+    lastname: Optional[str] = Query(default=None, max_length=50, min_length=2),
+    email: Optional[str] = Query(default=None, max_length=150, min_length=5),
+    upcoming_birthday_days: Optional[int] = Query(
+        default=None,
+        ge=1,
+        description="Пошук контактів з днями народження на найближчі upcoming_birthday_days днів",
+    ),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=5, le=100, ge=5),
     db: AsyncSession = Depends(get_db),
 ):
     contact_service = ContactService(db)
     contacts = await contact_service.read_contacts(
-        firstname, lastname, email, skip, limit
+        firstname, lastname, email, upcoming_birthday_days, skip, limit
     )
     return contacts
 

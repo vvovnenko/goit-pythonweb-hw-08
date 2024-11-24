@@ -19,11 +19,12 @@ class ContactService:
         firstname: Optional[str] = None,
         lastname: Optional[str] = None,
         email: Optional[str] = None,
+        upcoming_birthday_days: Optional[int] = None,
         skip: int = 0,
         limit: int = 10,
     ) -> List[Contact]:
         return await self.repository.read_contacts(
-            firstname, lastname, email, skip, limit
+            firstname, lastname, email, upcoming_birthday_days, skip, limit
         )
 
     async def read_contact(self, contact_id: int) -> Optional[Contact]:
