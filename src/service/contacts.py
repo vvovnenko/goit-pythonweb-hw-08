@@ -31,3 +31,6 @@ class ContactService:
 
     async def update_contact(self, contact_id: int, contact_data: ContactModel):
         return await self.repository.update_contact(contact_id, contact_data)
+
+    async def delete_contact(self, contact_id: int) -> Optional[Contact]:
+        return await self.repository.delete_contact(contact_id)

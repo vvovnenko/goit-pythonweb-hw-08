@@ -53,3 +53,10 @@ class ContactsRepository:
             await self.db.commit()
             await self.db.refresh(contact)
         return contact
+
+    async def delete_contact(self, contact_id: int) -> Optional[Contact]:
+        contact = await self.read_contact(contact_id)
+        if contact:
+            await self.db.delete(contact)
+            await self.db.commit()
+        return contact

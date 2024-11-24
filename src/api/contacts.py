@@ -63,3 +63,16 @@ async def update_contact(
             status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found."
         )
     return contact
+
+
+@router.delete(
+    "/{contact_id}", response_model=ContactResponseModel, summary="Delete contact"
+)
+async def delete_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
+    contact_service = ContactService(db)
+    contact = await contact_service.delete_contact(contact_id)
+    if contact is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found."
+        )
+    return contact
